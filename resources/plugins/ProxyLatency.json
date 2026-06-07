@@ -4,13 +4,13 @@
     "name": "科学节点延迟监控",
     "version": "1.0",
     "author": "LiteMonitor",
-    "description": "一般Clash代理地址为：127.0.0.1:7890 (默认端口，一般无需修改)，如测试本地延迟则全部留空"
+    "description": "本机已验证可用代理地址为：127.0.0.1:10808；如测试本地延迟则全部留空"
   },
   "inputs": [
     {
       "key": "proxy_server",
       "label": "本地代理地址",
-      "default": "127.0.0.1:7890",
+      "default": "127.0.0.1:10808",
       "type": "text",
       "placeholder": "留空则本地直连",
       "scope": "target"

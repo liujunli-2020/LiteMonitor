@@ -276,6 +276,50 @@ namespace LiteMonitor.src.Plugins
             _configSnapshots[inst.Id] = GetConfigHash(inst);
         }
 
+        public Task RefreshEnabledInstancesAsync(bool visibleOnly = true)
+        {
+            var settings = Settings.Load();
+            var refreshTasks = new List<Task>();
+
+            foreach (var inst in settings.PluginInstances.Where(x => x.Enabled))
+            {
+                if (visibleOnly && !IsPluginVisible(inst.Id)) continue;
+
+                var tmpl = _templates.FirstOrDefault(x => x.Id == inst.TemplateId);
+                if (tmpl == null) continue;
+
+                var instance = inst;
+                var template = tmpl;
+                var token = _cts.TryGetValue(instance.Id, out var cts)
+                    ? cts.Token
+                    : System.Threading.CancellationToken.None;
+
+                refreshTasks.Add(Task.Run(async () =>
+                {
+                    try
+                    {
+                        PluginMonitorSyncService.Instance.SyncMonitorItem(instance, template, saveIfChanged: false);
+                        _executor.ClearCache(instance.Id);
+
+                        bool success = await _executor.ExecuteInstanceAsync(instance, template, token);
+                        if (success)
+                        {
+                            _consecutiveFailures.TryRemove(instance.Id, out _);
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Manual plugin refresh failed ({instance.Id}): {ex.Message}");
+                    }
+                }, token));
+            }
+
+            return refreshTasks.Count == 0 ? Task.CompletedTask : Task.WhenAll(refreshTasks);
+        }
+
         public void RemoveInstance(string instanceId)
         {
             StopInstance(instanceId);

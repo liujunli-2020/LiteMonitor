@@ -1,0 +1,13 @@
+bin/
+obj/
+publish/
+.vs/
+*.user
+*.suo
+*.log
+settings.json
+settings.json.bak
+settings.json.tmp
+resources/assets/app.original.ico
+resources/plugins/LiteMonitorBridge/config.json
+使用说明(必读).txt

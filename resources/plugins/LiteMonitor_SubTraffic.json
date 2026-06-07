@@ -1,0 +1,57 @@
+{
+  "id": "LocalSubTraffic",
+  "meta": {
+    "name": "订阅流量监控",
+    "version": "1.0",
+    "author": "liujunli",
+    "description": "通过本地 LiteMonitor bridge 读取订阅响应头 subscription-userinfo，显示已用/总流量和到期日期"
+  },
+  "inputs": [
+    {
+      "key": "bridge_base_url",
+      "label": "桥接服务地址",
+      "type": "text",
+      "default": "http://127.0.0.1:18786",
+      "placeholder": "http://127.0.0.1:18786",
+      "scope": "global"
+    }
+  ],
+  "execution": {
+    "type": "chain",
+    "interval": 600,
+    "steps": [
+      {
+        "id": "fetch_subtraffic",
+        "url": "{{bridge_base_url}}/subtraffic",
+        "method": "GET",
+        "response_format": "json",
+        "cache_minutes": 0,
+        "extract": {
+          "traffic": "traffic",
+          "expire": "expire",
+          "traffic_color": "traffic_color",
+          "expire_color": "expire_color"
+        }
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "key": "traffic",
+      "label": "流量",
+      "short_label": "流",
+      "format_val": "{{traffic}}",
+      "color": "{{traffic_color}}",
+      "unit": ""
+    },
+    {
+      "key": "expire",
+      "label": "到期",
+      "short_label": "期",
+      "format_val": "{{expire}}",
+      "color": "{{expire_color}}",
+      "unit": ""
+    }
+  ]
+}
+

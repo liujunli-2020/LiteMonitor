@@ -2,19 +2,38 @@
   "id": "PublicIP",
   "meta": {
     "name": "公网IP显示",
-    "version": "1.0",
-    "author": "LiteMonitor",
-    "description": "公网IP插件，获取当前网络的公网IPv4地址"
+    "version": "1.1",
+    "author": "LiteMonitor / liujunli",
+    "description": "公网IP插件，默认通过本地代理查询当前出口公网IPv4地址"
   },
-  "inputs": [],
+  "inputs": [
+    {
+      "key": "proxy_server",
+      "label": "本地代理地址",
+      "default": "127.0.0.1:10808",
+      "type": "text",
+      "placeholder": "留空则使用系统网络",
+      "scope": "target"
+    },
+    {
+      "key": "ip_api_url",
+      "label": "IP 查询接口",
+      "default": "https://api.ipify.org?format=json",
+      "type": "text",
+      "placeholder": "返回 {\"ip\":\"x.x.x.x\"} 的接口",
+      "scope": "target"
+    }
+  ],
   "execution": {
     "type": "chain",
-    "interval": 600,
+    "interval": 300,
     "steps": [
       {
         "id": "get_ip",
-        "url": "https://whois.pconline.com.cn/ipJson.jsp?json=true",
-        "response_encoding": "gbk",
+        "url": "{{ip_api_url}}",
+        "proxy": "{{proxy_server}}",
+        "response_format": "json",
+        "cache_minutes": 0,
         "extract": {
           "ip": "ip"
         }
@@ -24,8 +43,8 @@
   "outputs": [
     {
       "key": "addr",
-      "label": "公网IP",
-      "short_label": " ",
+      "label": "出口IP",
+      "short_label": "IP",
       "format_val": "{{ip}}",
       "unit": ""
     }

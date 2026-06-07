@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using static LiteMonitor.src.UI.Helpers.NativeMethods;
+using LiteMonitor.src.Plugins;
 
 namespace LiteMonitor
 {
@@ -25,6 +26,7 @@ namespace LiteMonitor
         private DateTime _lastFindHandleTime = DateTime.MinValue;
         private string _lastLayoutSignature = "";
         private readonly TaskbarTooltipHelper _tooltipHelper;
+        private DateTime _lastManualPluginRefresh = DateTime.MinValue;
         
         // 公开属性
         public string TargetDevice { get; private set; } = "";
@@ -158,6 +160,10 @@ namespace LiteMonitor
             {
                 ShowContextMenu();
             }
+            else if (e.Button == MouseButtons.Left)
+            {
+                TriggerManualPluginRefresh();
+            }
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -167,6 +173,14 @@ namespace LiteMonitor
             {
                 _bizHelper.HandleDoubleClick(_mainForm, _ui);
             }
+        }
+
+        private void TriggerManualPluginRefresh()
+        {
+            if ((DateTime.Now - _lastManualPluginRefresh).TotalMilliseconds < 750) return;
+
+            _lastManualPluginRefresh = DateTime.Now;
+            _ = PluginManager.Instance.RefreshEnabledInstancesAsync();
         }
 
         private void Tick()

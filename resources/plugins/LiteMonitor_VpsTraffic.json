@@ -1,0 +1,93 @@
+{
+  "id": "LocalVpsTraffic",
+  "meta": {
+    "name": "VPS 流量监控",
+    "version": "1.0",
+    "author": "liujunli",
+    "description": "通过本地 LiteMonitor bridge 汇总 node_exporter 与 BandwagonHost API，显示 VPS 上下行速率、套餐流量、重置日期和 TCP 连接数"
+  },
+  "inputs": [
+    {
+      "key": "bridge_base_url",
+      "label": "桥接服务地址",
+      "type": "text",
+      "default": "http://127.0.0.1:18786",
+      "placeholder": "http://127.0.0.1:18786",
+      "scope": "global"
+    }
+  ],
+  "execution": {
+    "type": "chain",
+    "interval": 300,
+    "steps": [
+      {
+        "id": "fetch_vps",
+        "url": "{{bridge_base_url}}/vps",
+        "method": "GET",
+        "response_format": "json",
+        "cache_minutes": 0,
+        "extract": {
+          "download_rate": "download_rate",
+          "upload_rate": "upload_rate",
+          "bwh_usage": "bwh_usage",
+          "bwh_reset": "bwh_reset",
+          "tcp_inuse": "tcp_inuse",
+          "tcp_established": "tcp_established",
+          "node_color": "node_color",
+          "bwh_color": "bwh_color"
+        }
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "key": "down",
+      "label": "↓",
+      "short_label": "↓",
+      "format_val": "{{download_rate}}",
+      "color": "{{node_color}}",
+      "unit": ""
+    },
+    {
+      "key": "up",
+      "label": "↑",
+      "short_label": "↑",
+      "format_val": "{{upload_rate}}",
+      "color": "{{node_color}}",
+      "unit": ""
+    },
+    {
+      "key": "bwh_usage",
+      "label": "流量",
+      "short_label": "流",
+      "format_val": "{{bwh_usage}}",
+      "color": "{{bwh_color}}",
+      "unit": ""
+    },
+    {
+      "key": "bwh_reset",
+      "label": "重置",
+      "short_label": "重",
+      "format_val": "{{bwh_reset}}",
+      "color": "{{bwh_color}}",
+      "unit": ""
+    },
+    {
+      "key": "tcp",
+      "label": "TCP",
+      "short_label": "TCP",
+      "format_val": "{{tcp_inuse}}",
+      "color": "{{node_color}}",
+      "unit": ""
+    },
+    {
+      "key": "est",
+      "label": "EST",
+      "short_label": "EST",
+      "format_val": "{{tcp_established}}",
+      "color": "{{node_color}}",
+      "unit": ""
+    }
+  ]
+}
+

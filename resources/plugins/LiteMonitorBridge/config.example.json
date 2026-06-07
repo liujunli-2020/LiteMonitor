@@ -1,0 +1,21 @@
+{
+  "listen": {
+    "host": "127.0.0.1",
+    "port": 18786
+  },
+  "subTraffic": {
+    "subscribeUrl": "",
+    "userAgent": "ClashforWindows/0.20.39",
+    "timeoutSeconds": 10
+  },
+  "vpsTraffic": {
+    "metricsUrl": "",
+    "basicAuthUser": "",
+    "basicAuthPassword": "",
+    "bwhVeid": "",
+    "bwhApiKey": "",
+    "bwhServiceInfoUrl": "https://api.64clouds.com/v1/getServiceInfo",
+    "networkDevice": "",
+    "timeoutSeconds": 15
+  }
+}
