@@ -1,3 +1,79 @@
+# LiteMonitor TrafficMonitor 插件增强版
+
+本仓库 fork 自 [Diorser/LiteMonitor](https://github.com/Diorser/LiteMonitor)，基于上游 `v1.3.6` 修改，主要用于把原来给 `TrafficMonitor_V1.86_x64` 编写的订阅流量和 VPS 流量插件迁移到 LiteMonitor，并补齐任务栏插件刷新、公网 IP 和图标显示相关体验。
+
+下载本修改版请使用本 fork 的 Release：
+
+- [最新发行版](https://github.com/liujunli-2020/LiteMonitor/releases/latest)
+- [本 fork 修改说明](./MODIFICATIONS.md)
+
+## 本 fork 修改内容
+
+- 任务栏左键立即刷新插件
+  点击 LiteMonitor 任务栏显示区域时，会立即刷新已启用且可见的插件实例，并带有 750ms 节流，避免连续点击造成重复网络请求。
+
+- TrafficMonitor 风格黑白透明图标
+  应用图标替换为参考 TrafficMonitor 心电波形的黑色透明图标，并生成多尺寸 ICO，用于改善托盘和任务栏图标清晰度。
+
+- 公网 IP 显示修正
+  `PublicIP` 插件不再使用 `whois.pconline.com.cn` 作为默认接口，改为默认通过 `https://api.ipify.org?format=json` 查询当前出口 IPv4。插件新增可配置项：
+  - `本地代理地址`：默认 `127.0.0.1:10808`
+  - `IP 查询接口`：默认 `https://api.ipify.org?format=json`
+
+- 科学节点延迟监控默认代理修正
+  `ProxyLatency` 插件默认代理地址改为本机已验证可用的 `127.0.0.1:10808`。
+
+- 迁移 TrafficMonitor 插件功能
+  新增两个 LiteMonitor JSON 插件和本地 PowerShell bridge：
+  - `订阅流量监控`：读取订阅响应头 `subscription-userinfo`，显示已用/总流量和到期日期。
+  - `VPS 流量监控`：汇总 node_exporter 和 BandwagonHost API，显示 VPS 上下行速率、套餐流量、重置日期、TCP in-use 和 established 数量。
+
+## Bridge 使用说明
+
+发布包内包含：
+
+```text
+resources/plugins/LiteMonitor_SubTraffic.json
+resources/plugins/LiteMonitor_VpsTraffic.json
+resources/plugins/LiteMonitorBridge/Start-LiteMonitorBridge.ps1
+resources/plugins/LiteMonitorBridge/Start-LiteMonitorBridge.cmd
+resources/plugins/LiteMonitorBridge/config.example.json
+```
+
+首次使用桥接插件时，将 `resources/plugins/LiteMonitorBridge/config.example.json` 复制为 `config.json`，填写订阅地址、node_exporter 地址和 BandwagonHost API 信息。真实 `config.json` 含有个人配置，不应提交到 Git。
+
+启动 bridge：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\resources\plugins\LiteMonitorBridge\Start-LiteMonitorBridge.ps1
+```
+
+bridge 默认监听：
+
+```text
+http://127.0.0.1:18786
+```
+
+提供端点：
+
+```text
+/health
+/subtraffic
+/vps
+```
+
+## 构建本 fork
+
+```powershell
+dotnet publish LiteMonitor.csproj -c Release -r win-x64 --self-contained false -o .\publish\LiteMonitor
+```
+
+本 fork 没有自动 release workflow，发行版由本地构建 zip 后通过 GitHub Release 发布。
+
+---
+
+## 原作者 README
+
 [English](./README.en.md)
 
 # <img src="./resources/screenshots/logo.png"  width="28" style="vertical-align: middle; margin-top: -4px;" /> LiteMonitor
