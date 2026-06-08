@@ -140,6 +140,8 @@ namespace LiteMonitor.src.Plugins
 
         public void Reload(Settings cfg)
         {
+            PluginBridgeLauncher.EnsureStartedIfNeeded(cfg);
+
             // 1. Identify active instances
             var currentIds = _timers.Keys.ToList();
             var newInstances = cfg.PluginInstances.Where(x => x.Enabled).ToDictionary(x => x.Id);
@@ -227,6 +229,7 @@ namespace LiteMonitor.src.Plugins
             _configSnapshots.Clear();
 
             var settings = Settings.Load();
+            PluginBridgeLauncher.EnsureStartedIfNeeded(settings);
             bool anyChange = false;
             
             foreach (var inst in settings.PluginInstances)

@@ -28,6 +28,9 @@
   - `订阅流量监控`：读取订阅响应头 `subscription-userinfo`，显示已用/总流量和到期日期。
   - `VPS 流量监控`：汇总 node_exporter 和 BandwagonHost API，显示 VPS 上下行速率、套餐流量、重置日期、TCP in-use 和 established 数量。
 
+- 自动启动本地 bridge
+  当 `订阅流量监控` 或 `VPS 流量监控` 启用，且 `resources/plugins/LiteMonitorBridge/config.json` 存在时，LiteMonitor 会在启动或重载插件时检查 `127.0.0.1:18786`。如果端口未监听，会自动隐藏启动 `LiteMonitorBridge`。
+
 ## Bridge 使用说明
 
 发布包内包含：
@@ -42,7 +45,7 @@ resources/plugins/LiteMonitorBridge/config.example.json
 
 首次使用桥接插件时，将 `resources/plugins/LiteMonitorBridge/config.example.json` 复制为 `config.json`，填写订阅地址、node_exporter 地址和 BandwagonHost API 信息。真实 `config.json` 含有个人配置，不应提交到 Git。
 
-启动 bridge：
+LiteMonitor 会在启用上述两个插件时自动启动 bridge。也可以手动启动 bridge：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\resources\plugins\LiteMonitorBridge\Start-LiteMonitorBridge.ps1

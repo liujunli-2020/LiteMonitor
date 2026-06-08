@@ -31,6 +31,10 @@ Base verified source:
   - `LiteMonitor_VpsTraffic.json`: VPS network rates, BandwagonHost traffic usage/reset, TCP counts.
   - `resources/plugins/LiteMonitorBridge`: local PowerShell bridge service used by those plugins.
 
+- Added automatic bridge startup.
+  - When `LocalSubTraffic` or `LocalVpsTraffic` is enabled and `config.json` exists, LiteMonitor checks `127.0.0.1:18786`.
+  - If the bridge is not listening, LiteMonitor starts `Start-LiteMonitorBridge.ps1` in a hidden PowerShell process.
+
 ## Local verification notes
 
 - `127.0.0.1:10808` was verified through the LiteMonitor-compatible proxy path against `http://www.gstatic.com/generate_204`.
@@ -39,3 +43,4 @@ Base verified source:
   - `whois.pconline.com.cn`: `1.203.116.230`
   - `myip.ipip.net`: IPv6 `240e:305:a9c:700:8d2b:eedf:9262:4165`
 - Because `whois.pconline.com.cn` reports the direct domestic IPv4 path while global APIs report the current egress IPv4, this fork uses `api.ipify.org` for the taskbar public IP display.
+- Bridge auto-start was verified by stopping LiteMonitor and the bridge, confirming port `18786` was closed, starting LiteMonitor, and then confirming `/health`, `/subtraffic`, and `/vps` all returned `OK`.
